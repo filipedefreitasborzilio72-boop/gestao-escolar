@@ -1,9 +1,11 @@
 import express from 'express'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import db from './db.js'
+import dotenv from 'dotenv'
+dotenv.config()
 const app = express()
-const PORT = 3000
-//Configurar o diretório Base p/ templates
+const PORT = process.env.PORT || 3200
 const __filename = fileURLToPath(import.meta.url)
 console.log("FileName: ",__filename)
 const __dirname = path.dirname(__filename)
@@ -15,5 +17,63 @@ app.use(express.json());
 
 app.get('/', (req, res)=>res.sendFile(path.join(baseDir, 'index.html')))
 
+app.get('/listar/alunos', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM aluno;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
+app.get('/listar/alunos', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM aluno;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
+app.get('/listar/alunos', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM aluno;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
+app.get('/listar/alunos', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM aluno;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
+app.get('/listar/alunos', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM aluno;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
 
+app.get('/listar/cursos', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM curso;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
+
+app.get('/listar/docentes', async (req,res)=>{
+    try {
+        const dados = await db.query('SELECT * FROM docente;')
+        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+    } catch (erro) {
+        res.status(500).json([{message:'Erro do servidor'}, erro])
+    }
+})
+    
 app.listen(PORT, () => {console.log('Server is running on http://localhost:'+PORT)})
