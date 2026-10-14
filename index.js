@@ -1,33 +1,52 @@
 import express from 'express'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import db from './db.js'
 import dotenv from 'dotenv'
+import db from './db.js'
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 const __filename = fileURLToPath(import.meta.url)
 console.log("FileName: ",__filename)
 const __dirname = path.dirname(__filename)
-console.log("DirName: ",__dirname)
+console.log("DirName: ", __dirname)
 const baseDir = path.join(__dirname, 'templates')
 console.log("BaseDir: ", baseDir)
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 const tabelas = ['aluno', 'curso', 'docente']
 
 app.get('/', (req, res)=>res.sendFile(path.join(baseDir, 'index.html')))
+app.get('/form/aluno', (req, res)=>res.sendFile(path.join(baseDir, 'form-aluno.html')))
 
 app.get('/listar/:tabela', async (req,res)=>{
     const { tabela } = req.params
     try {
-        if(!tabelas.includes(tabela.toLowerCase())){
+        if (!tabelas.includes(tabela.toLowerCase())){
             res.status(400).json({Code:400, message:'Bad Request.'})
         }
         const dados = await db.query(`SELECT * FROM ${tabela};`)
-        res.status(200).json([{message:'Sucesso.'}, dados.rows])
+        
+        res.status(200).json([{Code:200, Message:'Sucesso.'}, dados.rows])
     } catch (erro) {
-        res.status(500).json([{message:'Erro do servidor'}, erro])
+        res.status(500).json([{Code:500, Message:'Erro do servidor.'}, erro])
     }
-})    
+})
+
+app.post('/cadastrar/aluno', async (req, res)=>{
+    try {
+        let { matricula, nome, data_nascimento } = req.body
+        let dados = [matricula, nome, data_nascimento]
+        let sql = `INSERT INTO 
+                    ALUNO (matricula, nome, data_nascimento) 
+                    VALUES ($1, $2, $3)
+                    RETURNING id, matricula, nome, data_nascimento;
+        `
+        let resp = await db.query(sql, dados)
+        res.status(201).json([{Code:201, Message:'Dados gravados com sucesso.'}, resp.rows[0]])
+    } catch (erro) {
+        res.status(500).json([{Code:500, Message:'Erro do servidor.'}, erro])
+    }
+})
 app.listen(PORT, () => {console.log('Server is running on http://localhost:'+PORT)})
