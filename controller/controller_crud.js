@@ -5,7 +5,7 @@ export default {
         let campos = Object.keys(body).join(', ')
         let dados = Object.values(body)
         let placeholders = dados.map((dado, i) => `$${i + 1}`).join(', ')
-        return `INSERT INTO 
+        let sql=`INSERT INTO 
         ${tabela} (${campos}) 
         VALUES (${placeholders})
         RETURNING id;`
@@ -13,15 +13,16 @@ export default {
         return resp
     },
     sql_atualizar: async (body, tabela, id) => {
-        let campos = Object.keys(body) 
-        let placeholders = campos.map((c, i) => `${c}=$${i + 1}`).join(', ') 
-        dados.push(id) 
+        let campos = Object.keys(body)
+        let placeholders = campos.map((c, i) => `${c}=$${i + 1}`).join(', ')
+        let dados = Object.values(body)
+        dados.push(id)
         let sql = `UPDATE ${tabela} 
                     SET ${placeholders} 
-                    WHERE id=$${id};`
+                    WHERE id=$${dados.length};`
         let resp = await db.query(sql, dados)
         return resp
     },
 
-    sql_delete: async (id) => await db.query(`DELETE FROM ${tabela} WHERE id = $1;`, [id])
+    sql_delete: async (id, tabela) => await db.query(`DELETE FROM ${tabela} WHERE id = $1;`, [id])
 }
